@@ -10,6 +10,7 @@
  */
 
 import { PKCECodes } from "@/types/mal";
+import crypto from "node:crypto";
 
 /**
  * Generates a cryptographically secure code_verifier.
@@ -18,11 +19,27 @@ import { PKCECodes } from "@/types/mal";
  * 
  * @param length - Desired length (default: 128, min: 43, max: 128)
  */
-export function generateCodeVerifier(_length = 128): string {
+export function generateCodeVerifier(length = 128): string {
   // TODO: Implement using crypto.randomBytes() or web crypto
   // Hint: Convert random bytes to an allowed characters string
   // Ensure the length is within [43, 128]
-  throw new Error("Not implemented: generateCodeVerifier");
+  if (length < 43 || length > 128) {
+
+
+    throw new Error("Invalid verifier length: length must be between 43 and 128");
+
+  } else {
+    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+    const bytes = crypto.randomBytes(length);
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += charset[bytes[i] % charset.length];
+    }
+    return result;
+
+
+
+  }
 }
 
 /**
@@ -31,9 +48,9 @@ export function generateCodeVerifier(_length = 128): string {
  * 
  * @param verifier - The code_verifier string
  */
-export function generateCodeChallenge(_verifier: string): string {
+export function generateCodeChallenge(verifier: string): string {
   // TODO: Implement code challenge generation (for 'plain' method, it directly matches verifier)
-  throw new Error("Not implemented: generateCodeChallenge");
+  return verifier; 
 }
 
 /**
@@ -41,9 +58,11 @@ export function generateCodeChallenge(_verifier: string): string {
  * 
  * @param length - Desired length (default: 32)
  */
-export function generateState(_length = 32): string {
+export function generateState(length = 32): string {
   // TODO: Implement random state generation
-  throw new Error("Not implemented: generateState");
+  const bytes = crypto.randomBytes(length);
+  return bytes.toString("base64url").slice(0,length);
+  
 }
 
 /**
@@ -51,7 +70,11 @@ export function generateState(_length = 32): string {
  */
 export function createPKCECodes(): PKCECodes {
   // TODO: Combine generateCodeVerifier, generateCodeChallenge, and generateState
-  throw new Error("Not implemented: createPKCECodes");
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = generateCodeChallenge(codeVerifier);
+  const state = generateState(); 
+  return { codeChallenge, codeVerifier, state};
+  
 }
 
 /**
@@ -61,10 +84,26 @@ export function createPKCECodes(): PKCECodes {
  * https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id={clientId}&code_challenge={challenge}&code_challenge_method=plain&state={state}&redirect_uri={redirectUri}
  */
 export function buildMALAuthUrl(
-  _clientId: string,
-  _redirectUri: string,
-  _pkce: PKCECodes
+  clientId: string,
+  redirectUri: string,
+  pkce: PKCECodes
 ): string {
   // TODO: Use the URL and URLSearchParams Web API to construct the full auth URL
-  throw new Error("Not implemented: buildMALAuthUrl");
+  // 1. Create the base URL object
+const url = new URL("https://myanimelist.net/v1/oauth2/authorize");
+
+
+// 2. Set search params using url.searchParams.set(key, value)
+url.searchParams.set("response_type", "code");
+url.searchParams.set("client_id", clientId);
+url.searchParams.set("code_challenge", pkce.codeChallenge);
+url.searchParams.set("code_challenge_method", "plain"); 
+url.searchParams.set("state", pkce.state);
+url.searchParams.set("redirect_uri", redirectUri);
+
+// ... set the other 5 params ...
+
+// 3. Return the full URL string
+return url.toString();
+
 }
