@@ -20,6 +20,12 @@
 2. **Login Route (`src/app/api/auth/mal/login/route.ts`)**: 2/2 tests passing.
 3. **Token Exchange Client (`src/lib/mal/client.ts`)**: 2/2 tests passing (`exchangeCodeForTokens`).
    - Obsidian Note: `docs/notes/03-mal-token-exchange.md`
+4. **Repository Outer Look & Gakki_Vault Standard README**:
+   - Enhanced `README.md` with centered hero, shields, ASCII schematic, and metrics table.
+   - Configured GitHub repo description and 9 topics via `gh repo edit`.
+   - Created `LICENSE` (MIT).
+   - Obsidian Note: `docs/notes/04-repository-aesthetic-and-branding.md`
+
 
 ---
 
