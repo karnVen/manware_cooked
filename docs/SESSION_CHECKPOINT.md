@@ -15,9 +15,20 @@
 
 ---
 
-## 🎯 Completed Task: `GET /api/auth/mal/login` 🏆
-- Completed login route handler with guard clauses, PKCE generation, and secure HTTP-only cookies.
-- Verified test suite: 12/12 tests passing.
+## 🎯 Completed Tasks:
+1. **PKCE Generator (`src/lib/mal/pkce.ts`)**: 10/10 tests passing.
+2. **Login Route (`src/app/api/auth/mal/login/route.ts`)**: 2/2 tests passing.
+3. **Token Exchange Client (`src/lib/mal/client.ts`)**: 2/2 tests passing (`exchangeCodeForTokens`).
+   - Obsidian Note: `docs/notes/03-mal-token-exchange.md`
+
+---
+
+## ⚡ Mandatory End-of-Task Protocol (Locked in Memory)
+At the end of every completed task:
+1. Final polish & cleanups in codebase.
+2. Descriptive multi-bullet git commit & push to GitHub.
+3. Simple, readable Obsidian note created in `docs/notes/`.
+4. Update journal and checkpoint.
 
 ---
 
@@ -26,6 +37,6 @@ When resuming:
 1. Student opens `src/app/api/auth/callback/route.ts`.
 2. Extract query params `code` and `state`.
 3. Validate CSRF state against `mal_oauth_state` cookie.
-4. Exchange code for access & refresh tokens via `exchangeCodeForTokens`.
-5. Persist tokens into `mal_session` cookie and redirect to dashboard.
+4. Call `exchangeCodeForTokens` to get tokens.
+5. Persist tokens into `mal_session` cookie and redirect to `/`.
 

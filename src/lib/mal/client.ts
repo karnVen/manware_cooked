@@ -24,15 +24,43 @@ export const MAL_TOKEN_URL = "https://myanimelist.net/v1/oauth2/token";
  *  - grant_type: 'authorization_code'
  *  - redirect_uri (must match the authorize redirect_uri)
  */
-export async function exchangeCodeForTokens(_params: {
+
+
+export async function exchangeCodeForTokens(params: {
   clientId: string;
   clientSecret?: string;
   code: string;
   codeVerifier: string;
   redirectUri: string;
+
+  
 }): Promise<MALTokens> {
   // TODO: Implement token exchange request using native fetch()
-  throw new Error("Not implemented: exchangeCodeForTokens");
+
+  const body = new URLSearchParams({
+  client_id: params.clientId,
+  code: params.code,
+  code_verifier: params.codeVerifier,
+  grant_type: "authorization_code",
+  redirect_uri: params.redirectUri,
+});
+
+if (params.clientSecret) {
+  body.set("client_secret", params.clientSecret);
+}
+
+const response = await fetch(MAL_TOKEN_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded",
+  },
+  body: body.toString(),
+});
+if (!response.ok) {
+  const errorBody = await response.text();
+  throw new Error(`Token exchange failed (${response.status}): ${errorBody}`);
+}
+  return (await response.json()) as MALTokens;
 }
 
 /**

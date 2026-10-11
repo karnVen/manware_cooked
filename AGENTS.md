@@ -17,3 +17,10 @@ This entire repository (`AI-bou`) is an educational, AI-assisted learning system
    - Execute the test suite on the user's code.
    - If tests fail, diagnose the root cause and provide conceptual hints without giving away the raw code.
    - If tests pass, celebrate the milestone, document key takeaways in `STUDY_JOURNAL.md`, and advance to the next lesson.
+
+## 3. Mandatory End-of-Task Completion Protocol (Always Execute Upon Completion)
+Whenever any coding task / milestone implementation is completed and its test suite passes:
+1. **Code Cleanup**: Perform any final polish, syntax, and dead-code cleanups directly related to that task.
+2. **Git Commit & Push**: Stage changes, write a descriptive multi-bullet commit message, commit, and push to GitHub (`origin main`).
+3. **Obsidian Documentation**: Create/update clean, simplified Markdown notes in `docs/notes/` formatted with tags, callouts, diagrams, and Q&A flashcards for easy reading and memory retention in Obsidian.
+4. **Update Journal & Checkpoint**: Update `STUDY_JOURNAL.md` and `docs/SESSION_CHECKPOINT.md` with completed milestones, takeaways, and the exact next step.

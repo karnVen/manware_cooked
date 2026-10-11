@@ -36,14 +36,29 @@ This journal tracks our exact pair-programming progress, lessons learned, archit
 
 ---
 
+### 🎯 Milestone 3: Token Exchange Client (`exchangeCodeForTokens`) Complete! 🏆
+- **File**: [`src/lib/mal/client.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/lib/mal/client.ts)
+- **Test File**: [`src/lib/mal/client.test.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/lib/mal/client.test.ts)
+- **Test Status**: **2/2 tests passed (14/14 total active passing tests)**.
+- **Obsidian Note**: [`docs/notes/03-mal-token-exchange.md`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/docs/notes/03-mal-token-exchange.md)
+
+#### 🧠 Concepts Mastered:
+1. **`URLSearchParams` vs JSON for OAuth**:
+   - MAL token endpoint requires `application/x-www-form-urlencoded` format containing `client_id`, `code`, `code_verifier`, `grant_type: "authorization_code"`, and `redirect_uri`.
+2. **Native Fetch POST Dispatches**:
+   - Dispatching the token exchange request, checking `!response.ok`, and deserializing JSON tokens (`access_token`, `refresh_token`, `expires_in`).
+
+---
+
 ## 🚀 Next Starting Point: Phase 1 — Callback Route (`/api/auth/callback`)
 
-### 📍 Next Milestone: OAuth Callback & Token Exchange
+### 📍 Next Milestone: Wire Token Exchange into Callback Route
 - **Target File**: [`src/app/api/auth/callback/route.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/app/api/auth/callback/route.ts)
 - **Goal**:
   1. Extract `code` and `state` query params from the incoming MAL redirect.
   2. Read stored cookies (`mal_oauth_state`, `mal_code_verifier`).
   3. Validate CSRF state match (`incoming state === cookie state`).
-  4. Call `exchangeCodeForTokens()` to exchange the authorization code for access and refresh tokens.
-  5. Store the tokens in the `mal_session` cookie and redirect user to the app dashboard!
+  4. Call our newly completed `exchangeCodeForTokens()`.
+  5. Store the tokens in the `mal_session` cookie and redirect user to `/`!
+
 
