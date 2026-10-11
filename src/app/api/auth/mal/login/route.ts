@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { buildMALAuthUrl, createPKCECodes } from "@/lib/mal/pkce";
+import { COOKIE_KEYS, getSecureCookieOptions } from "@/lib/mal/session";
 
 /**
  * GET /api/auth/mal/login
@@ -7,19 +9,44 @@ import { NextResponse } from "next/server";
  * 
  * Steps to implement:
  * 1. Read MAL_CLIENT_ID and NEXT_PUBLIC_APP_URL from process.env.
- * 2. Generate PKCE codes (verifier, challenge, state) using `createPKCECodes()`.
- * 3. Construct redirect URI: `${NEXT_PUBLIC_APP_URL}/api/auth/callback`.
- * 4. Generate MAL auth URL with `buildMALAuthUrl()`.
- * 5. Create a redirect response to the auth URL.
- * 6. Set HTTP-only cookies for:
- *    - `mal_code_verifier` (needed during callback token exchange)
- *    - `mal_oauth_state` (needed during callback CSRF verification)
+ *    - If MAL_CLIENT_ID is missing, return NextResponse.json with error and status 500.
+ * 2. Construct the redirect URI: `${appUrl}/api/auth/callback`.
+ * 3. Generate PKCE codes (verifier, challenge, state) using `createPKCECodes()`.
+ * 4. Generate MAL auth URL with `buildMALAuthUrl(clientId, redirectUri, pkce)`.
+ * 5. Create a redirect response to the auth URL using `NextResponse.redirect(authUrl)`.
+ * 6. Set HTTP-only cookies on the response using `response.cookies.set()`:
+ *    - COOKIE_KEYS.CODE_VERIFIER -> pkce.codeVerifier (with getSecureCookieOptions(600))
+ *    - COOKIE_KEYS.OAUTH_STATE   -> pkce.state (with getSecureCookieOptions(600))
  * 7. Return the response.
  */
 export async function GET() {
-  // TODO: Implement login redirect with cookies
-  return NextResponse.json(
-    { error: "Not implemented: /api/auth/mal/login" },
-    { status: 501 }
+  const clientId = process.env.MAL_CLIENT_ID;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  if (!clientId) {
+    return NextResponse.json(
+      { error: "Server configuration error: MAL_CLIENT_ID is not configured." },
+      { status: 500 }
+    );
+  }
+
+  const pkce = createPKCECodes();
+  const redirectUri = `${appUrl}/api/auth/callback`;
+  const authUrl = buildMALAuthUrl(clientId, redirectUri, pkce);
+  const response = NextResponse.redirect(authUrl);
+
+  response.cookies.set(
+    COOKIE_KEYS.CODE_VERIFIER,
+    pkce.codeVerifier,
+    getSecureCookieOptions(600)
   );
+
+  response.cookies.set(
+    COOKIE_KEYS.OAUTH_STATE,
+    pkce.state,
+    getSecureCookieOptions(600)
+  );
+
+  return response;
 }
+

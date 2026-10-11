@@ -103,6 +103,7 @@ url.searchParams.set("redirect_uri", redirectUri);
 
 // ... set the other 5 params ...
 
+
 // 3. Return the full URL string
 return url.toString();
 
