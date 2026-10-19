@@ -18,7 +18,7 @@ describe("GET /api/auth/callback", () => {
     globalThis.fetch = originalFetch;
   });
 
-  it.skip("should return 403 when state is missing or does not match cookie (CSRF protection)", async () => {
+  it("should return 403 when state is missing or does not match cookie (CSRF protection)", async () => {
     // Incoming state differs from cookie state
     const req = new NextRequest("http://localhost:3000/api/auth/callback?code=test_code&state=incoming_state_123", {
       headers: {
@@ -33,7 +33,7 @@ describe("GET /api/auth/callback", () => {
     assert.match(body.error, /state/i);
   });
 
-  it.skip("should return 400 when authorization code or code_verifier cookie is missing", async () => {
+  it("should return 400 when authorization code or code_verifier cookie is missing", async () => {
     // Valid state, but missing code query param
     const req = new NextRequest("http://localhost:3000/api/auth/callback?state=valid_state", {
       headers: {
@@ -48,7 +48,7 @@ describe("GET /api/auth/callback", () => {
     assert.match(body.error, /code/i);
   });
 
-  it.skip("should exchange code for tokens, save session cookie, delete temp cookies, and redirect to /", async () => {
+  it("should exchange code for tokens, save session cookie, delete temp cookies, and redirect to /", async () => {
     const mockTokens = {
       token_type: "Bearer",
       expires_in: 2678400,

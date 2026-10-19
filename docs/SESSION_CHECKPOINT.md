@@ -25,7 +25,10 @@
    - Configured GitHub repo description and 9 topics via `gh repo edit`.
    - Created `LICENSE` (MIT).
    - Obsidian Note: `docs/notes/04-repository-aesthetic-and-branding.md`
-
+5. **OAuth 2.0 Callback Route (`src/app/api/auth/callback/route.ts`)**: 3/3 tests passing.
+   - State CSRF guard (403), credential check (400), code exchange, and session cookie persistence.
+   - 17/17 active tests passing across the entire project.
+   - Obsidian Note: `docs/notes/05-oauth-callback-and-session.md`
 
 ---
 
@@ -38,11 +41,11 @@ At the end of every completed task:
 
 ---
 
-## 🎯 Next Task: `GET /api/auth/callback`
+## 🎯 Next Task: Phase 2 — MAL Profile Ingestion & Animelist Scraper
 When resuming:
-1. Student opens `src/app/api/auth/callback/route.ts`.
-2. Extract query params `code` and `state`.
-3. Validate CSRF state against `mal_oauth_state` cookie.
-4. Call `exchangeCodeForTokens` to get tokens.
-5. Persist tokens into `mal_session` cookie and redirect to `/`.
+1. Open `src/lib/mal/client.ts`.
+2. Implement `fetchUserProfile(accessToken)` with fields `anime_statistics`.
+3. Implement `fetchUserAnimePage(accessToken, limit, offset)` for paginated anime lists.
+4. Wire up `src/app/api/auth/me/route.ts` to return current user session & profile.
+
 

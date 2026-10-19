@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { exchangeCodeForTokens } from "@/lib/mal/client";
+import { COOKIE_KEYS, getSecureCookieOptions } from "@/lib/mal/session";
 
 /**
  * GET /api/auth/callback
@@ -18,10 +20,46 @@ import { NextRequest, NextResponse } from "next/server";
  * 6. Clean up temporary cookies (`mal_oauth_state`, `mal_code_verifier`).
  * 7. Redirect user to `/` (or dashboard).
  */
-export async function GET(_request: NextRequest) {
-  // TODO: Implement OAuth callback validation, token exchange, and session cookie persistence
-  return NextResponse.json(
-    { error: "Not implemented: /api/auth/callback" },
-    { status: 501 }
+export async function GET(request: NextRequest) {
+  const code = request.nextUrl.searchParams.get("code");
+  const state = request.nextUrl.searchParams.get("state");
+
+  const storedState = request.cookies.get(COOKIE_KEYS.OAUTH_STATE)?.value;
+  const codeVerifier = request.cookies.get(COOKIE_KEYS.CODE_VERIFIER)?.value;
+
+  if (!state || !storedState || state !== storedState) {
+    return NextResponse.json(
+      { error: "Invalid or missing OAuth state" },
+      { status: 403 }
+    );
+  }
+
+  if (!code || !codeVerifier) {
+    return NextResponse.json(
+      { error: "Missing authorization code or verifier" },
+      { status: 400 }
+    );
+  }
+
+  const tokens = await exchangeCodeForTokens({
+    clientId: process.env.MAL_CLIENT_ID!,
+    clientSecret: process.env.MAL_CLIENT_SECRET,
+    code,
+    codeVerifier,
+    redirectUri: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/auth/callback`,
+  });
+
+  const response = NextResponse.redirect(new URL("/", request.nextUrl.origin));
+
+  response.cookies.set(
+    COOKIE_KEYS.SESSION,
+    JSON.stringify(tokens),
+    getSecureCookieOptions(tokens.expires_in)
   );
+
+  response.cookies.delete(COOKIE_KEYS.OAUTH_STATE);
+  response.cookies.delete(COOKIE_KEYS.CODE_VERIFIER);
+
+  return response;
 }
+

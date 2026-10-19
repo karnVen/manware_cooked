@@ -65,16 +65,33 @@ This journal tracks our exact pair-programming progress, lessons learned, archit
 
 ---
 
-## 🚀 Next Starting Point: Phase 1 — Callback Route (`/api/auth/callback`)
+### 🎯 Milestone 5: OAuth 2.0 Callback Route & Session Persistence Complete! 🏆
+- **File**: [`src/app/api/auth/callback/route.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/app/api/auth/callback/route.ts)
+- **Test File**: [`src/app/api/auth/callback/route.test.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/app/api/auth/callback/route.test.ts)
+- **Test Status**: **3/3 tests passed (17/17 total passing tests across entire codebase)**.
+- **Obsidian Note**: [`docs/notes/05-oauth-callback-and-session.md`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/docs/notes/05-oauth-callback-and-session.md)
 
-### 📍 Next Milestone: Wire Token Exchange into Callback Route
-- **Target File**: [`src/app/api/auth/callback/route.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/app/api/auth/callback/route.ts)
+#### 🧠 Concepts Mastered:
+1. **CSRF State Verification**:
+   - Matching URL `state` with cookie `mal_oauth_state` to prevent cross-site request forgery (returns HTTP 403 on mismatch).
+2. **Missing Credential Defensive Checks**:
+   - Guarding against missing `code` or `codeVerifier` (returns HTTP 400).
+3. **End-to-End Token Exchange**:
+   - Exchanging code via `exchangeCodeForTokens()` and sealing the response in `mal_session` cookie (HTTP-only, 31-day lifespan).
+4. **Cookie Hygiene**:
+   - Deleting ephemeral `mal_oauth_state` and `mal_code_verifier` cookies upon successful login.
+
+---
+
+## 🚀 Next Starting Point: Phase 2 — MAL Profile Ingestion & Animelist Scraper
+
+### 📍 Next Milestone: Fetch Authenticated User Profile & Lifetime Stats
+- **Target File**: [`src/lib/mal/client.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/lib/mal/client.ts) (`fetchUserProfile` & `fetchUserAnimePage`)
 - **Goal**:
-  1. Extract `code` and `state` query params from the incoming MAL redirect.
-  2. Read stored cookies (`mal_oauth_state`, `mal_code_verifier`).
-  3. Validate CSRF state match (`incoming state === cookie state`).
-  4. Call our newly completed `exchangeCodeForTokens()`.
-  5. Store the tokens in the `mal_session` cookie and redirect user to `/`!
+  1. Implement `fetchUserProfile(accessToken)`: GET `https://api.myanimelist.net/v2/users/@me?fields=anime_statistics`.
+  2. Implement `fetchUserAnimePage(accessToken, limit, offset)`: GET paginated animelist with status, scores, and genres.
+  3. Create route `GET /api/auth/me` to return the current user's profile and authentication status.
+
 
 
 
