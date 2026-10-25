@@ -73,3 +73,73 @@ describe("MyAnimeList Client - exchangeCodeForTokens", () => {
     );
   });
 });
+
+describe("MyAnimeList Client - fetchUserProfile", () => {
+  const originalFetch = globalThis.fetch;
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it("should fetch user profile with Bearer authorization and return MALUser", async () => {
+    const mockUser = {
+      id: 12345,
+      name: "AnimeFan99",
+      picture: "https://myanimelist.net/images/user.jpg",
+      anime_statistics: {
+        num_items_watching: 3,
+        num_items_completed: 150,
+        num_items_on_hold: 2,
+        num_items_dropped: 12,
+        num_items_plan_to_watch: 50,
+        num_items: 217,
+        num_days_watched: 45.2,
+        num_days_watching: 1.1,
+        num_days_completed: 40.5,
+        num_days_on_hold: 0.8,
+        num_days_dropped: 2.8,
+        num_days: 45.2,
+        mean_score: 7.84,
+      },
+    };
+
+    let capturedUrl = "";
+    let capturedOptions: RequestInit | undefined;
+
+    globalThis.fetch = async (url, options) => {
+      capturedUrl = url.toString();
+      capturedOptions = options;
+      return new Response(JSON.stringify(mockUser), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+
+    const user = await (await import("./client")).fetchUserProfile("valid_access_token_123");
+
+    assert.equal(
+      capturedUrl,
+      "https://api.myanimelist.net/v2/users/@me?fields=anime_statistics"
+    );
+    assert.equal(
+      (capturedOptions?.headers as Record<string, string>)["Authorization"],
+      "Bearer valid_access_token_123"
+    );
+    assert.deepEqual(user, mockUser);
+  });
+
+  it("should throw an error when fetchUserProfile fails", async () => {
+    globalThis.fetch = async () => {
+      return new Response("Unauthorized", { status: 401 });
+    };
+
+    await assert.rejects(
+      async () => {
+        const { fetchUserProfile } = await import("./client");
+        await fetchUserProfile("expired_token");
+      },
+      /Failed to fetch user profile \(401\)/
+    );
+  });
+});
+

@@ -79,8 +79,14 @@ export async function refreshAccessToken(_params: {
  * Fetches the authenticated user's profile and lifetime anime statistics.
  * GET https://api.myanimelist.net/v2/users/@me?fields=anime_statistics
  */
-export async function fetchUserProfile(_accessToken: string): Promise<MALUser> {
+export async function fetchUserProfile(accessToken: string): Promise<MALUser> {
   // TODO: Implement authenticated profile fetch
+
+const url = `${MAL_BASE_URL}/users/@me?fields=anime_statistics`;
+fetch(url, Headers: {
+  Authorization: `Bearer ${accessToken}`, 
+}
+)
   throw new Error("Not implemented: fetchUserProfile");
 }
 
