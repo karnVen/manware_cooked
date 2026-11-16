@@ -80,14 +80,20 @@ export async function refreshAccessToken(_params: {
  * GET https://api.myanimelist.net/v2/users/@me?fields=anime_statistics
  */
 export async function fetchUserProfile(accessToken: string): Promise<MALUser> {
-  // TODO: Implement authenticated profile fetch
+  const url = `${MAL_BASE_URL}/users/@me?fields=anime_statistics`;
 
-const url = `${MAL_BASE_URL}/users/@me?fields=anime_statistics`;
-fetch(url, Headers: {
-  Authorization: `Bearer ${accessToken}`, 
-}
-)
-  throw new Error("Not implemented: fetchUserProfile");
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Failed to fetch user profile (${response.status}): ${errorBody}`);
+  }
+
+  return (await response.json()) as MALUser;
 }
 
 /**

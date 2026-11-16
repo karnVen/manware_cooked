@@ -83,14 +83,32 @@ This journal tracks our exact pair-programming progress, lessons learned, archit
 
 ---
 
+## 📅 Session Log: November 16, 2026
+
+### 🎯 Milestone 6: Authenticated User Profile Ingestion (`fetchUserProfile`) Complete! 🏆
+- **File**: [`src/lib/mal/client.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/lib/mal/client.ts)
+- **Test File**: [`src/lib/mal/client.test.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/lib/mal/client.test.ts)
+- **Test Status**: **4/4 tests passed (19/19 total passing tests across entire codebase)**.
+- **Obsidian Note**: [`docs/notes/06-mal-user-profile-ingestion.md`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/docs/notes/06-mal-user-profile-ingestion.md)
+
+#### 🧠 Concepts Mastered:
+1. **Bearer Authentication Header**:
+   - Supplying `Authorization: Bearer <accessToken>` in native fetch headers to authenticate API v2 resource queries.
+2. **Selective Statistics Fields**:
+   - Querying `?fields=anime_statistics` on `/v2/users/@me` to retrieve lifetime counts (completed, dropped, mean rating, days watched) for AI roast diagnostics.
+3. **Defensive Response Handling**:
+   - Verifying `!response.ok` before attempting deserialization, capturing error bodies, and throwing descriptive status errors.
+
+---
+
 ## 🚀 Next Starting Point: Phase 2 — MAL Profile Ingestion & Animelist Scraper
 
-### 📍 Next Milestone: Fetch Authenticated User Profile & Lifetime Stats
-- **Target File**: [`src/lib/mal/client.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/lib/mal/client.ts) (`fetchUserProfile` & `fetchUserAnimePage`)
+### 📍 Next Milestone: Paginated Anime List Ingestion (`fetchUserAnimePage`)
+- **Target File**: [`src/lib/mal/client.ts`](file:///z:/home/karnven/AI-bou/main-project/manware_cooked/src/lib/mal/client.ts) (`fetchUserAnimePage`)
 - **Goal**:
-  1. Implement `fetchUserProfile(accessToken)`: GET `https://api.myanimelist.net/v2/users/@me?fields=anime_statistics`.
-  2. Implement `fetchUserAnimePage(accessToken, limit, offset)`: GET paginated animelist with status, scores, and genres.
-  3. Create route `GET /api/auth/me` to return the current user's profile and authentication status.
+  1. Implement `fetchUserAnimePage(accessToken, limit, offset)`: GET `/v2/users/@me/animelist?fields=list_status,genres,mean,num_episodes&limit={limit}&offset={offset}`.
+  2. Write unit tests for `fetchUserAnimePage` in `src/lib/mal/client.test.ts`.
+  3. Create route `GET /api/auth/me` to return the current user's profile and session.
 
 
 

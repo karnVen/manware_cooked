@@ -30,6 +30,11 @@
    - 17/17 active tests passing across the entire project.
    - Obsidian Note: `docs/notes/05-oauth-callback-and-session.md`
 
+6. **User Profile Ingestion (`fetchUserProfile` in `src/lib/mal/client.ts`)**: 2/2 tests passing.
+   - Bearer auth header, selective `?fields=anime_statistics`, defensive error guard.
+   - 19/19 active tests passing across the entire project.
+   - Obsidian Note: `docs/notes/06-mal-user-profile-ingestion.md`
+
 ---
 
 ## ⚡ Mandatory End-of-Task Protocol (Locked in Memory)
@@ -44,8 +49,8 @@ At the end of every completed task:
 ## 🎯 Next Task: Phase 2 — MAL Profile Ingestion & Animelist Scraper
 When resuming:
 1. Open `src/lib/mal/client.ts`.
-2. Implement `fetchUserProfile(accessToken)` with fields `anime_statistics`.
-3. Implement `fetchUserAnimePage(accessToken, limit, offset)` for paginated anime lists.
+2. Implement `fetchUserAnimePage(accessToken, limit, offset)` for paginated anime lists.
+3. Add unit tests for `fetchUserAnimePage` in `src/lib/mal/client.test.ts`.
 4. Wire up `src/app/api/auth/me/route.ts` to return current user session & profile.
 
 
