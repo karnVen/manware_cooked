@@ -143,3 +143,93 @@ describe("MyAnimeList Client - fetchUserProfile", () => {
   });
 });
 
+describe("MyAnimeList Client - fetchUserAnimePage", () => {
+  const originalFetch = globalThis.fetch;
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it("should fetch user anime page with default limit=100, offset=0, and required fields", async () => {
+    const mockAnimeResponse = {
+      data: [
+        {
+          node: {
+            id: 1,
+            title: "Cowboy Bebop",
+            mean: 8.75,
+            genres: [{ id: 1, name: "Action" }, { id: 24, name: "Sci-Fi" }],
+            num_episodes: 26,
+          },
+          list_status: {
+            status: "completed",
+            score: 10,
+            num_watched_episodes: 26,
+            is_rewatching: false,
+            updated_at: "2026-01-01T00:00:00Z",
+          },
+        },
+      ],
+      paging: {
+        next: "https://api.myanimelist.net/v2/users/@me/animelist?offset=100",
+      },
+    };
+
+    let capturedUrl = "";
+    let capturedOptions: RequestInit | undefined;
+
+    globalThis.fetch = async (url, options) => {
+      capturedUrl = url.toString();
+      capturedOptions = options;
+      return new Response(JSON.stringify(mockAnimeResponse), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+
+    const { fetchUserAnimePage } = await import("./client");
+    const result = await fetchUserAnimePage("test_access_token_123");
+
+    const parsedUrl = new URL(capturedUrl);
+    assert.equal(parsedUrl.origin + parsedUrl.pathname, "https://api.myanimelist.net/v2/users/@me/animelist");
+    assert.equal(parsedUrl.searchParams.get("fields"), "list_status,genres,mean,num_episodes");
+    assert.equal(parsedUrl.searchParams.get("limit"), "100");
+    assert.equal(parsedUrl.searchParams.get("offset"), "0");
+    assert.equal(
+      (capturedOptions?.headers as Record<string, string>)["Authorization"],
+      "Bearer test_access_token_123"
+    );
+    assert.deepEqual(result, mockAnimeResponse);
+  });
+
+  it("should support custom limit and offset query parameters", async () => {
+    let capturedUrl = "";
+
+    globalThis.fetch = async (url) => {
+      capturedUrl = url.toString();
+      return new Response(JSON.stringify({ data: [], paging: {} }), { status: 200 });
+    };
+
+    const { fetchUserAnimePage } = await import("./client");
+    await fetchUserAnimePage("test_token", 50, 150);
+
+    const parsedUrl = new URL(capturedUrl);
+    assert.equal(parsedUrl.searchParams.get("limit"), "50");
+    assert.equal(parsedUrl.searchParams.get("offset"), "150");
+  });
+
+  it("should throw an error when fetchUserAnimePage returns non-200 status", async () => {
+    globalThis.fetch = async () => {
+      return new Response("Internal Server Error", { status: 500 });
+    };
+
+    await assert.rejects(
+      async () => {
+        const { fetchUserAnimePage } = await import("./client");
+        await fetchUserAnimePage("test_token");
+      },
+      /Failed to fetch user anime list \(500\)/
+    );
+  });
+});
+

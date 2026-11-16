@@ -101,10 +101,22 @@ export async function fetchUserProfile(accessToken: string): Promise<MALUser> {
  * GET https://api.myanimelist.net/v2/users/@me/animelist?fields=list_status,genres,mean,num_episodes&limit={limit}&offset={offset}
  */
 export async function fetchUserAnimePage(
-  _accessToken: string,
-  _limit = 100,
-  _offset = 0
+  accessToken: string,
+  limit = 100,
+  offset = 0
 ): Promise<MALUserAnimeListResponse> {
-  // TODO: Implement paginated animelist fetch
-  throw new Error("Not implemented: fetchUserAnimePage");
+  const url = `${MAL_BASE_URL}/users/@me/animelist?fields=list_status,genres,mean,num_episodes&limit=${limit}&offset=${offset}`;
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Failed to fetch user anime list (${response.status}): ${errorBody}`);
+  }
+
+  return (await response.json()) as MALUserAnimeListResponse;
 }

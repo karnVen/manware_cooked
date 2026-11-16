@@ -32,8 +32,11 @@
 
 6. **User Profile Ingestion (`fetchUserProfile` in `src/lib/mal/client.ts`)**: 2/2 tests passing.
    - Bearer auth header, selective `?fields=anime_statistics`, defensive error guard.
-   - 19/19 active tests passing across the entire project.
    - Obsidian Note: `docs/notes/06-mal-user-profile-ingestion.md`
+7. **Paginated Anime List Ingestion (`fetchUserAnimePage` in `src/lib/mal/client.ts`)**: 3/3 tests passing.
+   - Query pagination (`limit`, `offset`), multi-field projection (`list_status,genres,mean,num_episodes`).
+   - **22/22 active tests passing across the entire project**.
+   - Obsidian Note: `docs/notes/07-mal-paginated-animelist-scraper.md`
 
 ---
 
@@ -46,11 +49,12 @@ At the end of every completed task:
 
 ---
 
-## 🎯 Next Task: Phase 2 — MAL Profile Ingestion & Animelist Scraper
+## 🎯 Next Task: Phase 2 — Authenticated Current User Route (`GET /api/auth/me`)
 When resuming:
-1. Open `src/lib/mal/client.ts`.
-2. Implement `fetchUserAnimePage(accessToken, limit, offset)` for paginated anime lists.
-3. Add unit tests for `fetchUserAnimePage` in `src/lib/mal/client.test.ts`.
-4. Wire up `src/app/api/auth/me/route.ts` to return current user session & profile.
+1. Create `src/app/api/auth/me/route.ts`.
+2. Extract `mal_session` cookie; return 401 if missing or invalid.
+3. Call `fetchUserProfile(session.access_token)`.
+4. Return `{ authenticated: true, user }`.
+5. Add unit tests in `src/app/api/auth/me/route.test.ts`.
 
 
